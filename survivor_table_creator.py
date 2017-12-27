@@ -15,20 +15,20 @@ def table_parameters():
         incr = raw_input("Are we incrementing skipping or killing? ('s' or 'k'): ")
         if (incr == 's') or (incr == 'k'):
             break
-    return (dimm, incr, filename)
+    return (dimm, incr)
 
 # creates a table of survivors with each row being how many people and col being how many kills/skips
 def survivor_table(n = 1, k = 1, s = 1, l = 1, p = 0, dimm = 100, incr = 'k'):
     s_table = [[0]*dimm for _ in xrange(dimm)
     i_index = xrange(len(s_table))
     j_index = xrange(len(s_table[0]))
-    if (incr = 'k'): # kill increases
+    if (incr == 'k'): # kill increases
         for i in i_index:
             for j in j_index:
                 new_life = constant_lives(l, n + i)
                 dead = josephus(n + i, k + j, s, new_life, p)
                 s_table[i][j] = dead[-1]
-    if (incr = 's'): # skip increases
+    if (incr == 's'): # skip increases
         for i in i_index:
             for j in j_index:
                 new_life = constant_lives(l, n + i)
@@ -41,13 +41,13 @@ def survivor_table_l(n = 1, k = 1, s = 1, l = 1, p = 0, dimm = 100, incr = 'k'):
     s_table = [[0]*dimm for _ in xrange(dimm)]
     i_index = xrange(len(s_table))
     j_index = xrange(len(s_table[0]))
-    if (incr = 'k'): # kill increases
+    if (incr == 'k'): # kill increases
         for i in i_index:
             for j in j_index:
                 new_life = constant_lives(l + j, n + i)
                 dead = josephus(n + i, k + i, s, new_life, p)
                 s_table[i][j] = dead[-1]
-    if (incr = 's'): # skip increases
+    if (incr == 's'): # skip increases
         for i in i_index:
             for j in j_index:
                 new_life = constant_lives(l + j, n + i)
