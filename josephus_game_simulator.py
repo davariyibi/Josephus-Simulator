@@ -49,33 +49,40 @@ def input_lives(n):
 def josephus(n, k, s, l, p = 0, show = False):
     total_lives = sum(l)
     show_list = []
+    dead_list = []
+    is_dead = False # for skipping players who have already died
+
     for i in range(n):
         show_list.append(str(i) + ':')
-    dead_list = []
-    success = False
-    b = 0 # runs before the game starts
+
+    # skips people before person p
+    b = 0
     while b < p:
         show_list[b] = show_list[b] + " _"
         b = b + 1
+
     while (total_lives > 0):
-        for i in range(k): # process of killing players
+        # process of killing players
+        for i in range(k):
             if (total_lives > 0): # stops an infinite loop of all dead players
-                success = False # skips players who have already died
-                while not success:
+                is_dead = False
+                while not is_dead:
                     p = p % n # keeps player pointer from going out of bounds
                     lives = l[p]
                     if (lives > 0):
                         lives = lives - 1 # player loses a life
                         total_lives = total_lives - 1
                         l[p] = lives # updates player's life amount
-                        success = True
+                        is_dead = True
                         if (lives == 0): # if player is dead, adds them to dead_list
                             dead_list.append(p)
                         show_list[p] = show_list[p] + " X"
                     else:
                         show_list[p] = show_list[p] + " _"
                     p = p + 1 # moves on to next players
-        for j in range(s): # process of skipping people
+
+        # process of skipping people
+        for j in range(s):
             if (total_lives > 0):
                 success = False
                 while not success:
@@ -86,9 +93,12 @@ def josephus(n, k, s, l, p = 0, show = False):
                     else:
                         show_list[p] = show_list[p] + " _"
                     p = p + 1
+
+    # prints graphic
     if show:
         for m in show_list:
             print m
+
     return dead_list
 
 if __name__ == '__main__':
