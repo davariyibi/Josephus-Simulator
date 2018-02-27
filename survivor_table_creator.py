@@ -19,7 +19,7 @@ def table_parameters():
 
 # creates a table of survivors with each row being how many people and col being how many kills/skips
 def survivor_table(n = 1, k = 1, s = 1, l = 1, p = 0, dimm = 100, incr = 'k'):
-    s_table = [[0]*dimm for _ in xrange(dimm)
+    s_table = [[0]*dimm for _ in xrange(dimm)]
     i_index = xrange(len(s_table))
     j_index = xrange(len(s_table[0]))
     if (incr == 'k'): # kill increases
@@ -55,10 +55,23 @@ def survivor_table_l(n = 1, k = 1, s = 1, l = 1, p = 0, dimm = 100, incr = 'k'):
                 s_table[i][j] = dead[-1]
     return s_table
 
+# used to create table for case l=k=s compared with n and n>=2k both increase
+def survivor_table_2(dimm = 100):
+    s_table = [[0]*dimm for _ in xrange(dimm)]
+    i_index = xrange(len(s_table))
+    j_index = xrange(len(s_table[0]))
+    for i in i_index:
+        for j in j_index:
+            if (i >= (2 * j)) and (i > 0) and (j > 0):
+                new_life = constant_lives(j, i)
+                dead = josephus(i,j,j, new_life, 0)
+                s_table[j][i] = dead[-1] + 1
+    return s_table
+
 def create_csv(table, fn):
     with open(fn + '.csv', 'wb') as myfile:
         wr = csv.writer(myfile, quoting = csv.QUOTE_ALL)
-        for i in s_table:
+        for i in table:
             wr.writerow(i)
 
 if __name__ == '__main__':
@@ -66,3 +79,4 @@ if __name__ == '__main__':
     (dimm, incr) = table_parameters()
     filename = raw_input("Filename: ")
     create_csv(survivor_table(numb, kill, skip, life[0], stpt, dimm, incr), filename)
+    # create_csv(survivor_table_2(), filename)

@@ -56,6 +56,7 @@ def josephus(n, k, s, l, p = 0, show = False):
         show_list.append(str(i) + ':')
 
     # skips people before person p
+    
     b = 0
     while b < p:
         show_list[b] = show_list[b] + " _"
