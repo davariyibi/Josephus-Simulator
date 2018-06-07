@@ -33,11 +33,11 @@ def game_parameters():
         if stpt == stpt % numb: break
 
     while True:
-        kfsf = raw_input("Skip-first/kill-first ('sf' or 'kf'): ")
-        if kfsf == "sf":
+        kfsf = raw_input("Skip-first/kill-first ('s' or 'k'): ")
+        if kfsf == "s":
             kfsf = True
             break
-        elif kfsf == "kf":
+        elif kfsf == "k":
             kfsf = False
             break
 
