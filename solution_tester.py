@@ -1,9 +1,9 @@
-# program tests various proved and theorized solutions to the Ducks and Geese Josephus Game by comparing with simulator
+# program tests various solutions to parts of the Ducks and Geese Josephus Game
 # (c) 2017 David Ariyibi, Williams College, daa1@williams.edu
 
 from sys import argv
 import josephus as j
-import math
+import math as m
 
 def gcd(a,b):
     while b > 0: a, b = b, a % b
@@ -12,142 +12,118 @@ def gcd(a,b):
 def lcm(a, b):
     return a * b / gcd(a, b)
 
-def unknown():
-    print "-- unknown -> run simulator"
-    return -1
-
-# skip-first solution for survivor in cases when k = 1 and l = 1 (original Josephus Problem)
-# (c) Wikipedia/Josephus_problem
-def k1_l1(n, s):
-    if n > 1:
-        if n >= s:
-            n_prime = n - (n / s)
-            return s * ((k1_l1(n_prime, s) - n % s) % n_prime) / (s - 1)
-        return (k1_l1(n - 1, s) + s) % n
-    return 0
-
 def test(n, k, s, l, p, sf, g):
     print "Game: n=" + str(n) + ", k=" + str(k) + ", s=" + str(s) + ", l=" + str(l) + ", p=" + str(p) + ", sf=" + str(sf)
 
-    # # Section 4: Proposition 4.1
-    # if gcd(n, k + s) == 1 and l > k:
-    #     print "- Reduce l"
-    #     l = l - k
-    #     while l > k: l = l - k
-    #     return test(n, k, s, l, p, sf, g)
-    #
-    # # Section 4: Theorem 4.2
-    # if n % (k + s) == 0:
-    #     print "- Reduce n"
-    #     subprob = test(n * s / (k + s), k, s, l, p, sf, g)
-    #     if sf: return (k + s) * (subprob / s) + (subprob % s)
-    #     return (k + s) * (subprob / s) + (subprob % s) - s
+    # Thm 5.1
+    if gcd(n, k + s) == 1 and l > k:
+        print "- Thm 5.1"
+        l = l - k
+        while l > k: l = l - k
+        return test(n, k, s, l, p, sf, g)
 
-    # Section 3 Solutions
+    # Thm 5.3
+    if n % (k + s) == 0:
+        print "- Thm 5.3"
+        subprob = test(n * s / (k + s), k, s, l, p, sf, g)
+        if sf: return (k + s) * (subprob / s) + (subprob % s)
+        return (k + s) * (subprob / s) + (subprob % s) - s
+
+    # Thm 5.2
+    if s % n == 0 and n % k == 0:
+        print "- Thm 5.2"
+        l = 1
+
+    # Section 3
     if l == 1:
         print "- l = 1"
-        return test_l1(n, k, s, l, p, sf, g)
+        return test_1(n, k, s, l, p, sf, g)
 
     return unknown()
 
-def test_l1(n, k, s, l, p, sf, g):
-    # Used for Theorems 3.3 and 3.4
-    # find a where 1 <= a <= k such that a = n mod
-    a = n % k
-    if a == 0: a = k
+def test_1(n, k, s, l, p, sf, g):
 
-    # Section 3: Theorem 3.3
+    # Thm 3.3
     if k % s == 0:
-        # find largest b such that n >= a * (((k + s)/s) ^ b)
+        a = n % k
+        if a == 0: a = k
+
         ks = k + s
-        kss, b = ks / s, 1
+        kss = ks / s
+        b = 1
         while n >= a * (kss ** b): b = b + 1
         b = b - 1
 
-        # let m = (n - a * (((k + s)/s) ^ b)) / k
         m = (n - a * (kss ** b)) / (k + 0.0)
-
-        # survivor is T(n, k, s) = (k + s) * m + s - 1
         int_m, akssb = int(m), a * (kss ** b)
-        if math.ceil(m) == math.floor(m) and (akssb % ks == 0 or ks > akssb):
-            # return (ks * int_m + s - 1 + p) % n
-            if sf: print "Test.1: " + str((ks * int_m + s - 1 + p) % n)
-            else: print "Test.1: " + str((ks * int_m - 1 + p) % n)
-        print "---- incorrect form"
-    # return -1
+        if 0.0 == m - int_m and (akssb % ks == 0 or ks > akssb):
+            print "- Thm 3.3"
+            if sf: return (ks * int_m + s - 1 + p) % n
+            else: return (ks * int_m - 1 + p) % n
 
-    # Section 3: Theorem 3.4
+    # Thm 3.4, Cor 3.1, Cor 3.2
     if True:
-        # find largest b such that n >= a * ((k + s) ^ b)
-        ks, b = k + s, 1
+        a = n % k
+        if a == 0: a = k
+
+        ks = k + s
+        b = 1
         while n >= a * (ks ** b): b = b + 1
         b = b - 1
 
-        # let m = (n - a * ((k + s) ^ b)) / k
         m = (n - a * (ks ** b)) / (k + 0.0)
+        int_m = int(m)
+        km = int_m * (k + 1)
+        if 0.0 == m - int_m and km <= n and n <= (int_m + 1) * k:
+            ksm = ks * int_m
+            if sf: T = (ksm + s - 1 + p) % n
+            else: T = (ksm - 1 + p) % n
+            if ksm < n:
+                print "- Thm 3.4"
+                return T
 
-        # survivor is T(n, k, s) = (k + s) * (m + floor((a * s ^ b) /k)) + s - 1
-        m_ = int(m)
-        km = m_ * (k + 1)
-        if math.ceil(m) == math.floor(m) and km <= n and n <= (m_ + 1) * k: # and n <= k * (k + 1):
+            i = m.ceil((ksm - n) / (s + 0.0)) * k
+            if s == 2:
+                print "- Cor 3.1"
+                T = (T + i) % n
+            if s == 3:
+                print "- Cor 3.2"
+                if int_m < 3: T = (T + i) % n
+                else: T = (T + i + k) % n
+            return T
 
-            if s > 1:
-                i, sm = n - km, (s - 1) * m_
-                if i < sm:
-                    # j = math.ceil((sm - i) / (s + 0.0))
-                    # if sf: return (ks * m_ + (k * j) + s - 1 + p) % n
-                    # return (ks * m_ + (k * j) - 1 + p) % n
-                    return -1
+    # Thm 3.1
+    if n == k + s and k >= s:
+        print "- Thm 3.1"
+        if sf: return (p - 1 + s) % n
+        return (p - 1) % n
 
-            if sf: return (ks * m_ + s - 1 + p) % n
-            return (ks * m_ - 1 + p) % n
-            # return m_
-
-        print "---- incorrect form"
-    return -1
-
-    # Wikipedia/Josephus_problem solution
-    if k == 1:
-        print "-- k = 1"
-        if sf: return k1_l1(n, s)
-        return k1_l1(n, s) - s
-
-    # Section 3: Theorem 3.2
-    if n == k + s:
-        print "-- n = k + s"
-        if k >= s:
-            print "--- k >= s"
-            if sf: return (p - 1 + s) % n
-            return (p - 1) % n
-        print "--- k < s"
-        return unknown()
-
-    # Section 3.1: Theorem ?
+    # Prop 3.1, Thm 3.2
     if n < k + s:
-        print "-- n < k + s"
         if k >= n:
-            print "--- k >= n"
+            print "- Prop 3.1"
             if sf: return (p - 1 + s) % n
             return (p - 1) % n
-        if k >= n/2:
-            print "--- k >= n/2"
+        if k >= n / 2:
+            print "- Thm 3.2"
             a = s % (n - k)
             if a == 0: a = n - k
             if sf: return (k + a + p - 1 + s) % n
             return (k + a + p - 1) % n
-        print "--- k < n/2"
-        return unknown()
 
-    # Section 3.1: Theorem ?
-    print "-- n > k + s"
+    # Thm 3.2
     if k > s and k > n/2:
-        print "--- k > s and k >= n/2"
+        print "- Thm 3.2"
         a = s % (n - k)
         if a == 0: a = n - k
         if sf: return (k + a + p - 1 + s) % n
         return (k + a + p - 1) % n
-    print "--- k <= s or k < n/2"
+
     return unknown()
+
+def unknown():
+    print "- unknown -> run simulator"
+    return -1
 
 def parse_arg(arg):
     if (len(arg) != 8):
@@ -166,6 +142,7 @@ def parse_arg(arg):
     return test(int(arg[1]), int(arg[2]), int(arg[3]), int(arg[4]), int(arg[5]), sf, g)
 
 if __name__ == '__main__':
-    print parse_arg(argv)
-    res = j.parse_arg(arg)
+    test = parse_arg(argv)
+    if test > -1: print "Test: " + str(test)
+    res = j.parse_arg(argv)
     print "Actual: " + str(res[-1])
