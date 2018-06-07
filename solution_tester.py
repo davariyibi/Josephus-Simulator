@@ -130,14 +130,13 @@ def parse_arg(arg):
         print len(arg)
         return j.error(0)
 
-    if (argv[6] == '-s'):
+    g = False
+    if (argv[6] == 's'):
         sf = True
-        if (argv[7] == "-g"): g = True
-        if (argv[7] == "-n"): g = False
-    if (argv[6] == '-k'):
+        if (argv[7] == "g"): g = True
+    if (argv[6] == 'k'):
         sf = False
-        if (argv[7] == "-g"): g = True
-        if (argv[7] == "-n"): g = False
+        if (argv[7] == "g"): g = True
 
     return test(int(arg[1]), int(arg[2]), int(arg[3]), int(arg[4]), int(arg[5]), sf, g)
 

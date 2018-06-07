@@ -83,16 +83,14 @@ def parse_arg(arg):
     if (len(arg) != 8): return error(0)
 
     n = int(arg[1])
-    if (argv[6] == '-s'):
-        if (argv[7] == "-g"):
+    if (argv[6] == 's'):
+        if (argv[7] == "g"):
             return josephus(n, int(arg[2]), int(arg[3]), constant_lives(int(arg[4]), n), int(arg[5]), True, True)
-        elif (argv[7] == "-n"):
-            return josephus(n, int(arg[2]), int(arg[3]), constant_lives(int(arg[4]), n), int(arg[5]), True, False)
-    elif (argv[6] == '-k'):
-        if (argv[7] == "-g"):
+        return josephus(n, int(arg[2]), int(arg[3]), constant_lives(int(arg[4]), n), int(arg[5]), True, False)
+    elif (argv[6] == 'k'):
+        if (argv[7] == "g"):
             return josephus(n, int(arg[2]), int(arg[3]), constant_lives(int(arg[4]), n), int(arg[5]), False, True)
-        elif (argv[7] == "-n"):
-            return josephus(n, int(arg[2]), int(arg[3]), constant_lives(int(arg[4]), n), int(arg[5]), False, False)
+        return josephus(n, int(arg[2]), int(arg[3]), constant_lives(int(arg[4]), n), int(arg[5]), False, False)
     return error(1)
 
 # error cases
