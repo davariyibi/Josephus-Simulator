@@ -11,7 +11,7 @@ def game_parameters():
         if numb > 0: break
 
     while True:
-        kill = int(raw_input("Number of players shot in a row: "))
+        kill = int(raw_input("Number of players hit in a row: "))
         if kill > 0: break
 
     while True:

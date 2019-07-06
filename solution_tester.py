@@ -6,13 +6,6 @@ from sys import argv
 import josephus as j
 import math as m
 
-def gcd(a,b):
-    while b > 0: a, b = b, a % b
-    return a
-
-def lcm(a, b):
-    return a * b / gcd(a, b)
-
 # tests solutions where l >= 1
 def test(n, k, s, l, p, sf, g):
     print "Game: n=" + str(n) + ", k=" + str(k) + ", s=" + str(s) + ", l=" + str(l) + ", p=" + str(p) + ", sf=" + str(sf)
@@ -26,8 +19,8 @@ def test(n, k, s, l, p, sf, g):
     # Prop 5
     if k % n == 0:
         print "- Prop 5"
-        if sf: return (s * m.ceil(n * l / (k + 0.0)) - 1 + p) % n
-        return (s * m.ceil(n * l / (k + 0.0)) - s - 1 + p) % n
+        if sf: return (s * int(m.ceil(n * l / (k + 0.0))) - 1 + p) % n
+        return (s * int(m.ceil(n * l / (k + 0.0))) - s - 1 + p) % n
 
     # Prop 6
     if s % n == 0 and k >= n:
@@ -55,7 +48,7 @@ def test(n, k, s, l, p, sf, g):
         return test(n, k, s, 1, p, sf, g)
 
     # Thm 7
-    kn = m.ceil(k / (n + 0.0))
+    kn = int(m.ceil(k / (n + 0.0)))
     if (k + s) % n == 0 and l % kn == 0:
         print "- Thm 7"
         a = k % n
@@ -80,7 +73,7 @@ def test(n, k, s, l, p, sf, g):
         print "- l = 1"
         return test_1(n, k, s, l, p, sf, g)
 
-    return unknown()
+    return -1
 
 # tests solutions where l == 1
 def test_1(n, k, s, l, p, sf, g):
@@ -150,11 +143,12 @@ def test_1(n, k, s, l, p, sf, g):
             if sf: return (ksm + s - 1 + p) % n
             return (ksm - 1 + p) % n
 
-    return unknown()
-
-def unknown():
-    print "- unknown -> run simulator"
     return -1
+
+# greatest common denominator
+def gcd(a,b):
+    while b > 0: a, b = b, a % b
+    return a
 
 def parse_arg(arg):
     if (len(arg) != 8):
@@ -172,7 +166,5 @@ def parse_arg(arg):
     return test(int(arg[1]), int(arg[2]), int(arg[3]), int(arg[4]), int(arg[5]), sf, g)
 
 if __name__ == '__main__':
-    test = parse_arg(argv)
-    if test > -1: print "Test: " + str(test)
-    res = j.parse_arg(argv)
-    print "Actual: " + str(res[-1])
+    print "Test: " + str(parse_arg(argv))
+    print "Actual: " + str(j.parse_arg(argv)[-1])
