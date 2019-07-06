@@ -1,4 +1,5 @@
-# program tests various solutions to parts of the Ducks and Geese Josephus Game
+# program tests various proved solutions from the Extended Feline Josephus Game paper
+# Theorem and Proposition numbers correspond to paper
 # (c) 2017 David Ariyibi, Williams College, daa1@williams.edu
 
 from sys import argv
@@ -12,112 +13,142 @@ def gcd(a,b):
 def lcm(a, b):
     return a * b / gcd(a, b)
 
+# tests solutions where l >= 1
 def test(n, k, s, l, p, sf, g):
     print "Game: n=" + str(n) + ", k=" + str(k) + ", s=" + str(s) + ", l=" + str(l) + ", p=" + str(p) + ", sf=" + str(sf)
 
-    # Thm 5.1
+    # Prop 4
+    if n * l <= k:
+        print "- Prop 4"
+        if sf: return (s - 1 + p) % n
+        return (p - 1) % n
+
+    # Prop 5
+    if k % n == 0:
+        print "- Prop 5"
+        if sf: return (s * m.ceil(n * l / (k + 0.0)) - 1 + p) % n
+        return (s * m.ceil(n * l / (k + 0.0)) - s - 1 + p) % n
+
+    # Prop 6
+    if s % n == 0 and k >= n:
+        print "- Prop 6"
+        total = n * l
+        a = total / k * k
+        if total == a:
+            print "--- total == a"
+            return (p - 1) % n
+        if total - a >= n:
+            print "--- total - a >= n"
+            return (p - 1) % n
+        return ((s % (total - a)) + a - 1 + p) % n
+    
+    # Thm 5
     if gcd(n, k + s) == 1 and l > k:
-        print "- Thm 5.1"
+        print "- Thm 5"
         l = l - k
         while l > k: l = l - k
         return test(n, k, s, l, p, sf, g)
 
-    # Thm 5.3
+    # Thm 6
+    if l > 1 and s % n == 0 and n % k == 0:
+        print "- Thm 6"
+        return test(n, k, s, 1, p, sf, g)
+
+    # Thm 7
+    kn = m.ceil(k / (n + 0.0))
+    if (k + s) % n == 0 and l % kn == 0:
+        print "- Thm 7"
+        a = k % n
+        if sf: return test(s % n, k, s, l - ((k - a) * l / (n * kn)), p, sf, g)
+        return (test(s % n, k, s, l - ((k - a) * l / (n * kn)), p, sf, g) - s) % n
+
+    # Thm 8
     if n % (k + s) == 0:
-        print "- Thm 5.3"
+        print "- Thm 8"
         subprob = test(n * s / (k + s), k, s, l, p, sf, g)
         if sf: return (k + s) * (subprob / s) + (subprob % s)
-        return (k + s) * (subprob / s) + (subprob % s) - s
+        return ((k + s) * (subprob / s) + (subprob % s) - s) % n
 
-    # Thm 5.2
-    if s % n == 0 and n % k == 0:
-        print "- Thm 5.2"
-        l = 1
+    # Thm 9
+    a = gcd(gcd(n, k), s)
+    if a > 1:
+        print "- Thm 9"
+        subprob = test(n / a, k / a, s / a, l, 0, sf, g)
+        return (a * subprob + a - 1 + p) % n
 
-    # Section 3
     if l == 1:
         print "- l = 1"
         return test_1(n, k, s, l, p, sf, g)
 
     return unknown()
 
+# tests solutions where l == 1
 def test_1(n, k, s, l, p, sf, g):
 
-    # Thm 3.3
+    # Prop 1
+    if n <= k:
+        print "- Prop 1"
+        if sf: return (s - 1 + p) % n
+        return (p - 1) % n
+
+    # Prop 2
+    if n == k + s and k >= s:
+        print "- Prop 2"
+        if sf: return (p - 1 + s) % n
+        return (p - 1) % n
+
+    # Prop 3
+    if k >= n / 2:
+        print "- Prop 3"
+        a = s % (n - k)
+        if a == 0: a = n - k
+        if sf: return (k + a + p - 1 + s) % n
+        return (k + a + p - 1) % n
+
+    # Thm 3
     if k % s == 0:
         a = n % k
         if a == 0: a = k
+        print "a: " + str(a)
 
         ks = k + s
         kss = ks / s
         b = 1
         while n >= a * (kss ** b): b = b + 1
         b = b - 1
+        print "b: " + str(b)
 
-        m = (n - a * (kss ** b)) / (k + 0.0)
-        int_m, akssb = int(m), a * (kss ** b)
-        if 0.0 == m - int_m and (akssb % ks == 0 or ks > akssb):
-            print "- Thm 3.3"
+        akssb = a * (kss ** b)
+        m = (n - akssb) / (k + 0.0)
+        int_m = int(m)
+        print "m: " + str(int_m)
+
+        if ks >= akssb or akssb % ks == 0 and 0.0 == m - int_m:
+            print "- Thm 3"
             if sf: return (ks * int_m + s - 1 + p) % n
-            else: return (ks * int_m - 1 + p) % n
+            return (ks * int_m - 1 + p) % n
 
-    # Thm 3.4, Cor 3.1, Cor 3.2
+    # Thm 4
     if True:
         a = n % k
         if a == 0: a = k
+        print "a: " + str(a)
 
         ks = k + s
         b = 1
         while n >= a * (ks ** b): b = b + 1
         b = b - 1
+        print "b: " + str(b)
 
         m = (n - a * (ks ** b)) / (k + 0.0)
         int_m = int(m)
-        km = int_m * (k + 1)
-        if 0.0 == m - int_m and km <= n and n <= (int_m + 1) * k:
-            ksm = ks * int_m
-            if sf: T = (ksm + s - 1 + p) % n
-            else: T = (ksm - 1 + p) % n
-            if ksm < n:
-                print "- Thm 3.4"
-                return T
-
-            i = m.ceil((ksm - n) / (s + 0.0)) * k
-            if s == 2:
-                print "- Cor 3.1"
-                T = (T + i) % n
-            if s == 3:
-                print "- Cor 3.2"
-                if int_m < 3: T = (T + i) % n
-                else: T = (T + i + k) % n
-            return T
-
-    # Thm 3.1
-    if n == k + s and k >= s:
-        print "- Thm 3.1"
-        if sf: return (p - 1 + s) % n
-        return (p - 1) % n
-
-    # Prop 3.1, Thm 3.2
-    if n < k + s:
-        if k >= n:
-            print "- Prop 3.1"
-            if sf: return (p - 1 + s) % n
-            return (p - 1) % n
-        if k >= n / 2:
-            print "- Thm 3.2"
-            a = s % (n - k)
-            if a == 0: a = n - k
-            if sf: return (k + a + p - 1 + s) % n
-            return (k + a + p - 1) % n
-
-    # Thm 3.2
-    if k > s and k > n/2:
-        print "- Thm 3.2"
-        a = s % (n - k)
-        if a == 0: a = n - k
-        if sf: return (k + a + p - 1 + s) % n
-        return (k + a + p - 1) % n
+        print "m: " + str(int_m)
+     
+        ksm = (k + s) * int_m
+        if 0.0 == m - int_m and ksm < n and n <= (int_m + 1) * k:
+            print "- Thm 4"
+            if sf: return (ksm + s - 1 + p) % n
+            return (ksm - 1 + p) % n
 
     return unknown()
 

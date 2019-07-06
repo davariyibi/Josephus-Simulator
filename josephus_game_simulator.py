@@ -1,5 +1,5 @@
-# simulates the Ducks and Geese Josephus Game
-# for those who do not want to use the comman line arguments or need to input custom lives per player
+# simulates the Extended Feline Josephus Game
+# for those who do not want to use the command line arguments or need to input custom lives per player
 # (c) 2017 David Ariyibi, Williams College, daa1@williams.edu
 
 from josephus import josephus, input_lives, constant_lives

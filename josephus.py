@@ -1,4 +1,4 @@
-# simulates the Ducks and Geese Josephus Game and its subset of Josephus games
+# simulates the Extended Feline Josephus Game given parameters
 # (c) 2017 David Ariyibi, Williams College, daa1@williams.edu
 
 from sys import argv
